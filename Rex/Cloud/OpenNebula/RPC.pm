@@ -144,6 +144,14 @@ sub create_vm {
    my $hash_ref = $template->get_template_ref;
    $hash_ref->{TEMPLATE}->[0]->{NAME}->[0] = $option{name};
 
+   if (defined($option{overwrite})) {
+     for (split(';', $option{overwrite})) {
+       my ($k,$v);
+       next unless ($k,$v) = $_ =~ m:(.+)=(.+):;
+       $hash_ref->{TEMPLATE}->[0]->{uc($k)}->[0] = $v;
+     }  
+   }
+
    my $s = XMLout($hash_ref, RootName => undef, NoIndent => 1 );
 
    my $res = $self->_rpc("one.vm.allocate", [ string => $s ]);
